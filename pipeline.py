@@ -293,8 +293,9 @@ def get_args() -> typing.Tuple[
         """
     )
     parser.add_argument(
-        '--device', default='cuda', type=str,
-        help='The device on which the model will be running, default to cuda'
+        '--device', default=None,
+        help='The device on which the model will be running, default to the '
+        'best device available in the system.'
     )
     parser.add_argument(
         '--weights_file',
@@ -331,6 +332,9 @@ def get_args() -> typing.Tuple[
         subbatch_size=args.subbatch_size,
         num_recycle=args.num_cycle,
     )
+
+    if args.device is None:
+        args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
 
     return args, weights, forward_config
 
