@@ -28,11 +28,11 @@ import os
 import os.path
 import pathlib
 import typing
+from importlib import resources
 
 from Bio import PDB as PDB
 from Bio.PDB import StructureBuilder
 import torch
-from torch import hub
 from torch.backends import cuda, cudnn
 from torch.utils.hipify import hipify_python
 
@@ -224,31 +224,17 @@ def save_pdb(
     io.save(save_path)
 
 
-def _load_weights(
-        weights_url: str, weights_file: str,
-) -> collections.OrderedDict:
+def _load_weights(weights_file: pathlib.Path) -> collections.OrderedDict:
     """
-    Loads the weights from either a url or a local file. If from url,
+    Loads the weights from a local file.
 
     Args:
-        weights_url: a url for the weights
         weights_file: a local file
 
     Returns:
         state_dict: the state dict for the model
-
     """
-
-    use_cache = os.path.exists(weights_file)
-    if weights_file and weights_url and not use_cache:
-        logging.info(
-            f"Downloading weights from {weights_url} to {weights_file}"
-        )
-        os.makedirs(os.path.dirname(weights_file), exist_ok=True)
-        hub.download_url_to_file(weights_url, weights_file)
-    else:
-        logging.info(f"Loading weights from {weights_file}")
-
+    logging.info(f"Loading weights from {weights_file}")
     return torch.load(weights_file, map_location='cpu')
 
 
@@ -312,15 +298,9 @@ def get_args() -> typing.Tuple[
     )
     parser.add_argument(
         '--weights_file',
-        default=os.path.expanduser("~/.cache/omegafold_ckpt/model.pt"),
-        type=str,
-        help='The model cache to run'
-    )
-    parser.add_argument(
-        '--weights',
-        default="https://helixon.s3.amazonaws.com/release1.pt",
-        type=str,
-        help='The url to the weights of the model'
+        default=resources.path("omegafold.weights", "release_current.pt"),
+        type=pathlib.Path,
+        help='The model parameter to run'
     )
     parser.add_argument(
         '--pseudo_msa_mask_rate', default=0.12, type=float,
@@ -338,12 +318,11 @@ def get_args() -> typing.Tuple[
     args = parser.parse_args()
     _set_precision(args.allow_tf32)
 
-    weights_url = args.weights
-    weights_file = args.weights_file
+    weights_file: pathlib.Path = args.weights_file
     # if the output directory is not provided, we will create one alongside the
     # input fasta file
-    if weights_file or weights_url:
-        weights = _load_weights(weights_url, weights_file)
+    if weights_file.is_file():
+        weights = _load_weights(weights_file)
         weights = weights.pop('model', weights)
     else:
         weights = None
