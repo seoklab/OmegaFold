@@ -43,7 +43,7 @@ def main():
     # create the output directory
     os.makedirs(args.output_dir, exist_ok=True)
     # get the model
-    logging.info(f"Constructing OmegaFold")
+    logging.info("Constructing OmegaFold")
     model = of.OmegaFold(of.make_config())
     if state_dict is None:
         logging.warning("Inferencing without loading weight")

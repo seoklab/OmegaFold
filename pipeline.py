@@ -267,10 +267,10 @@ def get_args() -> typing.Tuple[
     parser = argparse.ArgumentParser(
         description=
         """
-        Launch OmegaFold and perform inference on the data. 
-        Some examples (both the input and output files) are included in the 
-        Examples folder, where each folder contains the output of each 
-        available model from model1 to model3. All of the results are obtained 
+        Launch OmegaFold and perform inference on the data.
+        Some examples (both the input and output files) are included in the
+        Examples folder, where each folder contains the output of each
+        available model from model1 to model3. All of the results are obtained
         by issuing the general command with only model number chosen (1-3).
         """
     )
@@ -285,9 +285,9 @@ def get_args() -> typing.Tuple[
         'output_dir', type=lambda x: os.path.expanduser(str(x)),
         help=
         """
-        The output directory to write the output pdb files. 
-        If the directory does not exist, we just create it. 
-        The output file name follows its unique identifier in the 
+        The output directory to write the output pdb files.
+        If the directory does not exist, we just create it.
+        The output file name follows its unique identifier in the
         rows of the input fasta file"
         """
     )
@@ -299,10 +299,10 @@ def get_args() -> typing.Tuple[
         '--subbatch_size', default=None, type=int,
         help=
         """
-        The subbatching number, 
-        the smaller, the slower, the less GRAM requirements. 
+        The subbatching number,
+        the smaller, the slower, the less GRAM requirements.
         Default is the entire length of the sequence.
-        This one takes priority over the automatically determined one for 
+        This one takes priority over the automatically determined one for
         the sequences
         """
     )
