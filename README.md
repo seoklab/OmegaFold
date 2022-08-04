@@ -26,10 +26,11 @@ The environment name is default to `omegafold`.
 There should be only one way to use the model:
 
 ```commandline
-omegafold INPUT_FILE.fasta OUTPUT_DIRECTORY
+omegafold [-o OUTPUT_DIRECTORY] INPUT_FILE.fasta
 ```
 
-And voila!
+And voila! The output directory is default to the filename without
+extension.
 
 The `INPUT_FILE.fasta` should be a normal fasta file with possibly many
 sequences with a comment line starting with `>` or `:` above the amino
