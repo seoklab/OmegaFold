@@ -268,13 +268,14 @@ def get_args() -> typing.Tuple[
         """
     )
     parser.add_argument(
-        'output_dir', type=lambda x: os.path.expanduser(str(x)),
+        '-o,--output_dir', default=None,
         help=
         """
         The output directory to write the output pdb files.
         If the directory does not exist, we just create it.
         The output file name follows its unique identifier in the
-        rows of the input fasta file"
+        rows of the input fasta file. Default to the basename of the input
+        file without the last extension.
         """
     )
     parser.add_argument(
@@ -318,6 +319,9 @@ def get_args() -> typing.Tuple[
 
     args = parser.parse_args()
     _set_precision(args.allow_tf32)
+
+    if args.output_dir is None:
+        args.output_dir = pathlib.Path(args.input_file).stem
 
     weights_file: pathlib.Path = args.weights_file
     # if the output directory is not provided, we will create one alongside the
