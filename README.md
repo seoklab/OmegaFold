@@ -2,7 +2,7 @@
 
 # OmegaFold: High-resolution de novo Structure Prediction from Primary Sequence
 
-#### This is the first release for paper [High-resolution de novo structure prediction from primary sequence](https://www.biorxiv.org/content/10.1101/2022.07.21.500999v1).
+**This is the first release for paper [High-resolution de novo structure prediction from primary sequence](https://www.biorxiv.org/content/10.1101/2022.07.21.500999v1).**
 
 We will continue to optimize this repository for more ease of use, for
 instance, reducing the GRAM required to inference long proteins and
@@ -10,25 +10,23 @@ releasing possibly stronger models.
 
 ## Setup
 
-To prepare the environment to run OmegaFold,
+Run the following command:
 
-```commandline
-pip install -r requirements.txt
+```bash
+./scripts/download_weights.sh
+conda env create -f environment.yml [-n <name>]
+conda activate <name>
+pip3 install .
 ```
 
-should get you where you want.
-Even if this failed, since we use minimal 3rd party libraries, you can
-always just install the latest
-[PyTorch](https://pytorch.org) and [biopython](https://biopython.org)
-(and that's it!)
-yourself.
+The environment name is default to `omegafold`.
 
 ## Running
 
 There should be only one way to use the model:
 
 ```commandline
-python main.py INPUT_FILE.fasta OUTPUT_DIRECTORY
+omegafold INPUT_FILE.fasta OUTPUT_DIRECTORY
 ```
 
 And voila!
@@ -36,11 +34,6 @@ And voila!
 The `INPUT_FILE.fasta` should be a normal fasta file with possibly many
 sequences with a comment line starting with `>` or `:` above the amino
 acid sequence itself.
-
-This command will download the weight
-from https://helixon.s3.amazonaws.com/release1.pt
-to `~/.cache/omegafold_ckpt/model.pt`
-and load the model
 
 However, since we have implemented sharded execution, it is possible to
 
@@ -54,7 +47,7 @@ However, since we have implemented sharded execution, it is possible to
 For more information, run
 
 ```commandline
-python main.py --help
+omegafold --help
 ```
 
 where we provide several options for both speed and weights utilities.
