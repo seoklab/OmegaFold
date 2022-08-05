@@ -268,7 +268,7 @@ def get_args() -> typing.Tuple[
         """
     )
     parser.add_argument(
-        '-o,--output_dir', default=None,
+        '-o', '--output_dir', default=None, dest="output_dir",
         help=
         """
         The output directory to write the output pdb files.
