@@ -14,13 +14,14 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 # =============================================================================
-from __future__ import annotations
 """
 This file contains the utilities that we use for the entire inference pipeline
 """
 # =============================================================================
 # Imports
 # =============================================================================
+from __future__ import annotations
+
 import argparse
 import collections
 import logging
@@ -39,6 +40,11 @@ from torch.utils.hipify import hipify_python
 
 from omegafold import utils
 from omegafold.utils.protein_utils import residue_constants as rc
+
+try:
+    from torch.backends import mps  # Compatibility with earlier versions
+except ImportError:
+    mps = None
 
 
 # =============================================================================
@@ -244,6 +250,39 @@ def _load_weights(weights_file: pathlib.Path) -> collections.OrderedDict:
     return torch.load(weights_file, map_location='cpu')
 
 
+def _get_device(device) -> str:
+    """
+    Infer the accelerator
+
+    Args:
+        device: the device type
+
+    Returns:
+
+    """
+    if device is None:
+        if torch.cuda.is_available():
+            return "cuda"
+        elif mps.is_available():
+            return "mps"
+        else:
+            return 'cpu'
+    elif device == 'cpu':
+        return device
+    elif device.startswith('cuda'):
+        if torch.cuda.is_available():
+            return device
+        else:
+            raise ValueError(f"Device cuda is not available")
+    elif device == "mps":
+        if mps.is_available():
+            return device
+        else:
+            raise ValueError(f"Device mps is not available")
+    else:
+        raise ValueError(f"Device type {device} is not available")
+
+
 def get_args() -> typing.Tuple[
     argparse.Namespace, collections.OrderedDict, argparse.Namespace]:
     """
@@ -300,9 +339,10 @@ def get_args() -> typing.Tuple[
         """
     )
     parser.add_argument(
-        '--device', default=None,
-        help='The device on which the model will be running, default to the '
-        'best device available in the system.'
+        '--device', default=None, type=str,
+        help=
+        'The device on which the model will be running, '
+        'default to the accelerator that we can find'
     )
     parser.add_argument(
         '--weights_file',
@@ -343,8 +383,7 @@ def get_args() -> typing.Tuple[
         num_recycle=args.num_cycle,
     )
 
-    if args.device is None:
-        args.device = 'cuda' if torch.cuda.is_available() else 'cpu'
+    args.device = _get_device(args.device)
 
     return args, weights, forward_config
 

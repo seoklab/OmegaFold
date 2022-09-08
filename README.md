@@ -2,11 +2,37 @@
 
 # OmegaFold: High-resolution de novo Structure Prediction from Primary Sequence
 
-**This is the first release for paper [High-resolution de novo structure prediction from primary sequence](https://www.biorxiv.org/content/10.1101/2022.07.21.500999v1).**
+**This is the release code for paper [High-resolution de novo structure prediction from primary sequence](https://www.biorxiv.org/content/10.1101/2022.07.21.500999v1).**
 
 We will continue to optimize this repository for more ease of use, for
 instance, reducing the GRAM required to inference long proteins and
 releasing possibly stronger models.
+
+## Update Notes
+
+We have optimized (to some extent) the GRAM usage of OmegaFold model in our
+latest release. Now the model can inference protein sequence as long as
+_4096_ on NVIDIA A100 Graphics card with 80 GB of memory with
+`--subbatch_size` set to 448 without hitting full memory.
+This version's model is more sensitive to `--subbatch_size`.
+
+### Setting Subbatch
+
+Subbatch makes a trade-off between time and space.
+One can greatly reduce the space requirements by setting `--subbatch_size`
+very low.
+The default is the number of residues in the sequence and the lowest
+possible number is 1.
+For now we do not have a rule of thumb for setting the `--subbatch_size`,
+but we suggest half the value if you run into GPU memory limitations.
+
+### MacOS Users
+
+For macOS users, we support MPS (Apple Silicon) acceleration if the user
+installs the latest nightly version of PyTorch.
+Also, current code also requires macOS users need to `git clone` the
+repository and use `python main.
+py` (see below) to run the model.
 
 ## Setup
 
